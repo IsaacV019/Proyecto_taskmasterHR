@@ -1,13 +1,11 @@
 <?php
-//SQLite ay que meterle lo de edtitar y borrar de una , el sabado me dices por que se me olvidad xd.
-
+//SQLite ay que meterle lo de edtitar y borrar de una , el sabado me dices por que se me olvidad xd.------------------
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, X-Requested-With');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(204); exit; }
-
 function getDB() {
     $dbPath = __DIR__ . '/../db/taskmaster.db';
     try {
@@ -20,7 +18,6 @@ function getDB() {
         jsonError('No se pudo conectar a la base de datos: ' . $e->getMessage(), 500);
     }
 }
-
 function jsonSuccess($data, $message = 'OK', $code = 200) {
     http_response_code($code);
     echo json_encode(['success' => true, 'message' => $message, 'data' => $data]);
@@ -51,27 +48,20 @@ function validateTask($data) {
     if (!empty($data['due_date']) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $data['due_date'])) $errors[] = 'Fecha inválida.';
     return $errors;
 }
-
 $method = $_SERVER['REQUEST_METHOD'];
 $id     = isset($_GET['id']) ? (int)$_GET['id'] : null;
 $db     = getDB();
-
 switch ($method) {
-
-  
     case 'GET':
         if ($id) {
-         
             $stmt = $db->prepare('SELECT * FROM tasks WHERE id = ?');
             $stmt->execute([$id]);
             $task = $stmt->fetch();
             if (!$task) jsonError('Tarea no encontrada', 404);
             jsonSuccess($task);
         } else {
-            
             $where  = [];
             $params = [];
-
             if (!empty($_GET['search'])) {
                 $where[] = "(title LIKE ? OR description LIKE ? OR category LIKE ?)";
                 $s = '%' . $_GET['search'] . '%';
@@ -99,12 +89,9 @@ switch ($method) {
             $stmt = $db->prepare($sql);
             $stmt->execute($params);
             $tasks = $stmt->fetchAll();
-
             jsonSuccess($tasks, 'OK');
         }
         break;
-
-
     case 'POST':
         $data   = getInput();
         $errors = validateTask($data);
@@ -131,19 +118,15 @@ switch ($method) {
     case 'PUT':
         if (!$id) jsonError('ID requerido para actualizar');
         $data = getInput();
-
         // Check exists
         $exists = $db->prepare('SELECT id FROM tasks WHERE id = ?');
         $exists->execute([$id]);
         if (!$exists->fetch()) jsonError('Tarea no encontrada', 404);
-
         $errors = validateTask(array_merge(
             $db->query("SELECT * FROM tasks WHERE id=$id")->fetch(),
             $data
         ));
         if ($errors) jsonError(implode(' ', $errors));
-
-      
         $allowed = ['title','description','priority','status','category','due_date'];
         $sets = []; $params = [];
         foreach ($allowed as $field) {
@@ -155,15 +138,12 @@ switch ($method) {
             }
         }
         if (empty($sets)) jsonError('No hay campos para actualizar');
-
         $sets[]   = "updated_at = datetime('now','localtime')";
         $params[] = $id;
         $sql = 'UPDATE tasks SET ' . implode(', ', $sets) . ' WHERE id = ?';
         $db->prepare($sql)->execute($params);
 
         $task = $db->query("SELECT * FROM tasks WHERE id=$id")->fetch();
-
-        // Si cambio el estado a completada, guardarlo en el historial -- Carlos
         if (isset($data['status']) && $data['status'] === 'completada') {
             $db->exec("CREATE TABLE IF NOT EXISTS history (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -172,7 +152,7 @@ switch ($method) {
                 task_category TEXT DEFAULT 'General', task_due_date TEXT DEFAULT '',
                 action TEXT NOT NULL, action_detail TEXT DEFAULT '', happened_at TEXT NOT NULL
             )");
-            // Verificar que no este duplicado en el historial
+            // Verificar que no este duplicado en el historial----------------------------------------------------------------------
             $dup = $db->prepare("SELECT id FROM history WHERE task_id=? AND action='completed' LIMIT 1");
             $dup->execute([$id]);
             if (!$dup->fetch()) {
@@ -181,25 +161,20 @@ switch ($method) {
                 $h->execute([$task['id'],$task['title'],$task['description'],$task['priority'],$task['category'],$task['due_date']]);
             }
         }
-
         jsonSuccess($task, 'Tarea actualizada correctamente');
         break;
-
-    // ── DELETE  ya lo eche jalar para que ni le muevas pendejo jajajaja
+    // ── DELETE  ya lo eche jalar para que ni le muevas pendejo jajajaja---------------------------------------------------
     case 'DELETE':
         if (!$id) jsonError('ID requerido para eliminar');
-
-        // Traer todos los datos ANTES de borrar para guardarlos en el historial
+        // Traer todos los datos ANTES de borrar para guardarlos en el historial---------------------------------------------------
         $check = $db->prepare('SELECT * FROM tasks WHERE id = ?');
         $check->execute([$id]);
         $task = $check->fetch();
         if (!$task) jsonError('Tarea no encontrada', 404);
-
-        // Borrar la tarea de la tabla principal
+        // Borrar la tarea de la tabla principal--------------------------------------------------------------------------------
         $db->prepare('DELETE FROM tasks WHERE id = ?')->execute([$id]);
-
         // Registrar en historial automaticamente al eliminar
-        // Asi el usuario puede ver que tareas borro y cuando -- Carlos
+        // Asi el usuario puede ver que tareas borro y cuando -----------------------------------------------------------------
         $db->exec("CREATE TABLE IF NOT EXISTS history (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             task_id INTEGER, task_title TEXT NOT NULL,
@@ -213,7 +188,6 @@ switch ($method) {
 
         jsonSuccess(['id' => $id, 'title' => $task['title']], 'Tarea eliminada correctamente');
         break;
-
     default:
         jsonError('Método no permitido', 405);
 }
