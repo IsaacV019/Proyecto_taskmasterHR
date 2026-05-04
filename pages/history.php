@@ -366,7 +366,6 @@ document.addEventListener('click', e => {
   if (!e.target.closest('#quickSearch') && !e.target.closest('#quickSearchResults'))
     document.getElementById('quickSearchResults').style.display='none';
 });
-
 document.addEventListener('DOMContentLoaded', () => {
   loadHistory();
   document.getElementById('sbAll').classList.add('active');
