@@ -4,9 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TaskMaster — Detalle de Tarea</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../css/bootstrap.min.css" rel="stylesheet">
+  <link href="../font/bootstrap-icons.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="../css/fuentes.css" rel="stylesheet">
   <link href="../css/style.css" rel="stylesheet">
 </head>
 <body>
@@ -23,7 +24,7 @@
         <li class="nav-item"><a class="nav-link" href="../index.php"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a></li>
         <li class="nav-item"><a class="nav-link" href="../pages/list.php"><i class="bi bi-list-task me-1"></i>Tareas</a></li>
         <li class="nav-item"><a class="nav-link" href="../pages/history.php"><i class="bi bi-clock-history me-1"></i>Historial</a></li>
-        <!-- Búsqueda rápida global — Carlos Alberto Ridan Jardines -->
+        <!-- Búsqueda rápida global -->
         <li class="nav-item ms-1">
           <div style="position:relative">
             <i class="bi bi-search" style="position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:var(--text3);font-size:.8rem;pointer-events:none;z-index:1"></i>
@@ -215,7 +216,7 @@
 
 <div class="toast-container position-fixed top-0 end-0 p-3"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/bootstrap.bundle.min.js"></script>
 <script src="../js/app.js"></script>
 <script>
 API.base = '../api/';

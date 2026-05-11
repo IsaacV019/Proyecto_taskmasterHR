@@ -10,7 +10,7 @@ function getDB() {
     $pdo = new PDO('sqlite:' . __DIR__ . '/../db/taskmaster.db');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    // Crear la tabla si es la primera vez que se llama -- Carlos
+    // Crear la tabla si es la primera vez que se llama 
     $pdo->exec("CREATE TABLE IF NOT EXISTS history (
         id              INTEGER PRIMARY KEY AUTOINCREMENT,
         task_id         INTEGER,
@@ -36,17 +36,17 @@ if ($method === 'GET') {
     $where  = [];
     $params = [];
 
-    // Filtro por tipo: deleted / completed / all
+    // Filtro por tipo: deleted / completed / all-----------------------------------------------------------
     if (!empty($_GET['action']) && $_GET['action'] !== 'all') {
         $where[]  = 'action = ?';
         $params[] = $_GET['action'];
     }
-    // Busqueda por nombre de tarea esto hay que terminarlo
+    // Busqueda por nombre de tarea esto hay que terminarlo-----------------------------------------------------------
     if (!empty($_GET['search'])) {
         $where[]  = 'task_title LIKE ?';
         $params[] = '%' . $_GET['search'] . '%';
     }
-    // Filtro por categoria
+    // Filtro por categoria--------------------------------------------------------------------------------------------
     if (!empty($_GET['category'])) {
         $where[]  = 'task_category = ?';
         $params[] = $_GET['category'];
@@ -62,7 +62,7 @@ if ($method === 'GET') {
     $stmt->execute($params);
     $rows = $stmt->fetchAll();
 
-    // Contadores para las tarjetas de resumen
+    // Contadores para las tarjetas de resumen-------------------------------------------------------------------------------------------
     $stats = $db->query("
         SELECT COUNT(*) AS total,
                SUM(action='deleted')   AS deleted,
@@ -103,14 +103,12 @@ if ($method === 'PUT') {
     $histId = (int)($data['history_id'] ?? 0);
     if (!$histId) fail('ID de historial requerido');
 
-    // Buscar el registro en el historial
+    // Buscar el registro en el historial-------------------------------------------------------------------------------------------
     $stmt = $db->prepare('SELECT * FROM history WHERE id = ?');
     $stmt->execute([$histId]);
     $entry = $stmt->fetch();
     if (!$entry) fail('Registro no encontrado', 404);
     if ($entry['action'] !== 'deleted') fail('Solo se pueden restaurar tareas eliminadas');
-
-    
     $db->exec("CREATE TABLE IF NOT EXISTS tasks (
         id          INTEGER PRIMARY KEY AUTOINCREMENT,
         title       TEXT    NOT NULL,
@@ -122,7 +120,6 @@ if ($method === 'PUT') {
         created_at  TEXT    NOT NULL,
         updated_at  TEXT    NOT NULL
     )");
-
     $now = date('Y-m-d H:i:s');
     $ins = $db->prepare("INSERT INTO tasks
         (title,description,priority,status,category,due_date,created_at,updated_at)
@@ -138,17 +135,12 @@ if ($method === 'PUT') {
         $now,
     ]);
     $newId = $db->lastInsertId();
-
-   
     $db->prepare('DELETE FROM history WHERE id = ?')->execute([$histId]);
-
     ok(['new_task_id' => $newId], 'Tarea restaurada correctamente');
 }
-
 if ($method === 'DELETE') {
     $db->exec('DELETE FROM history');
     ok(null, 'Historial limpiado');
 }
-
 fail('Método no permitido', 405);
 ?>

@@ -4,9 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TaskMaster — Historial</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../css/bootstrap.min.css" rel="stylesheet">
+  <link href="../font/bootstrap-icons.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="../css/fuentes.css" rel="stylesheet">
   <link href="../css/style.css" rel="stylesheet">
 </head>
 <body>
@@ -47,7 +48,6 @@
 
 <div class="d-flex">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar d-none d-lg-block">
     <div class="sidebar-title">Navegación</div>
     <a href="../index.php" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
@@ -75,10 +75,8 @@
     </a>
   </aside>
 
-  <!-- CONTENIDO -->
   <main class="main-content w-100">
 
-    <!-- Encabezado -->
     <div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-2">
       <div>
         <h2><i class="bi bi-clock-history me-2" style="color:var(--accent2)"></i>Historial de Tareas</h2>
@@ -91,7 +89,7 @@
       </button>
     </div>
 
-    <!-- Tarjetas resumen -->
+    <!-- Tarjetas resumen ----------------------------------------------------------------------------------->
     <div class="row g-3 mb-4">
       <div class="col-6 col-lg-4 animate-in animate-in-1">
         <div class="stat-card stat-indigo">
@@ -116,7 +114,7 @@
       </div>
     </div>
 
-    <!-- Filtros -->
+    <!-- Filtros ------------------------------------------------------------------------------------------------->
     <div class="filters-row d-flex flex-wrap gap-2 align-items-center animate-in mb-3">
       <div class="search-wrap flex-grow-1" style="min-width:180px;max-width:300px">
         <i class="bi bi-search search-icon"></i>
@@ -144,7 +142,7 @@
       </button>
     </div>
 
-    <!-- Lista historial -->
+    <!-- Lista historial --------------------------------------------------------------------------------------------->
     <div class="card animate-in animate-in-1">
       <div class="card-header d-flex justify-content-between align-items-center">
         <span class="fw-semibold">
@@ -158,17 +156,13 @@
         </div>
       </div>
     </div>
-
-    <!-- Hint -->
     <div class="d-flex justify-content-between align-items-center mt-2 table-hint animate-in">
       <span><i class="bi bi-info-circle me-1"></i>Se registra automáticamente al eliminar o completar tareas</span>
       <span><kbd>Ctrl+N</kbd> nueva tarea</span>
     </div>
-
   </main>
 </div>
 
-<!-- Modal limpiar -->
 <div class="modal fade" id="clearModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-sm">
     <div class="modal-content">
@@ -192,21 +186,16 @@
 
 <div class="toast-container"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/bootstrap.bundle.min.js"></script>
 <script src="../js/app.js"></script>
 <script>
-// Script de history.php -- Carlos Alberto Ridan Jardines
-
-// Apuntar API al directorio correcto desde /pages/
+// para history.php ------------------------------------------------------------------------------->
 API.base = '../api/';
-
 let hFilters = { action: 'all', search: '', category: '' };
-
 // Cargar y mostrar el historial completo
 async function loadHistory() {
   const list = document.getElementById('historyList');
   list.innerHTML = '<div class="text-center py-5"><div class="spinner-border spinner-border-sm text-primary"></div></div>';
-
   try {
     const p = new URLSearchParams();
     if (hFilters.action !== 'all') p.set('action',   hFilters.action);
@@ -218,11 +207,10 @@ async function loadHistory() {
     const res  = await fetch(API.base + 'history.php?' + p.toString());
     const data = await res.json();
     if (!data.success) throw new Error(data.message);
-
     const items = data.data.items || [];
     const stats = data.data.stats || {};
 
-    // Actualizar contadores
+    // Actualizar contadores----------------------------------------------------------------------------------
     setElText('statTotal',     stats.total     || 0);
     setElText('statDeleted',   stats.deleted   || 0);
     setElText('statCompleted', stats.completed || 0);
@@ -231,17 +219,14 @@ async function loadHistory() {
     document.getElementById('cntDeleted').textContent  = stats.deleted   || 0;
     document.getElementById('cntCompleted').textContent= stats.completed || 0;
     document.getElementById('listCount').textContent   = items.length + ' evento' + (items.length!==1?'s':'');
-
     renderHistory(items);
   } catch(e) {
     list.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><h5>Error al cargar</h5><p>${e.message}</p></div>`;
   }
 }
-
 // Renderizar la lista de eventos agrupados por día
 function renderHistory(items) {
   const list = document.getElementById('historyList');
-
   if (!items.length) {
     list.innerHTML = `<div class="empty-state">
       <div class="icon">🕐</div>
@@ -251,7 +236,6 @@ function renderHistory(items) {
     </div>`;
     return;
   }
-
   // Agrupar por fecha
   const groups = {};
   items.forEach(item => {
@@ -259,12 +243,10 @@ function renderHistory(items) {
     if (!groups[day]) groups[day] = [];
     groups[day].push(item);
   });
-
   let html = '';
   Object.entries(groups).forEach(([day, dayItems]) => {
-    // Encabezado del día
+    // Encabezado del día-----------------------------------------------------------------------------------------------
     html += `<div class="day-separator"><i class="bi bi-calendar3 me-1"></i>${dayLabel(day)}</div>`;
-
     dayItems.forEach((item, idx) => {
       const isDel  = item.action === 'deleted';
       const color  = isDel ? '#ff6b63' : '#34d65c';
@@ -273,7 +255,6 @@ function renderHistory(items) {
       const label  = isDel ? 'Eliminada' : 'Completada';
       const border = isDel ? 'var(--red-bd)' : 'var(--green-bd)';
       const time   = (item.happened_at || '').split(' ')[1]?.substring(0,5) || '—';
-
       html += `<div class="history-item animate-in" style="animation-delay:${idx*0.03}s">
         <!-- Icono de la accion -->
         <div class="action-icon ${item.action}">
@@ -305,11 +286,9 @@ function renderHistory(items) {
       </div>`;
     });
   });
-
   list.innerHTML = html;
 }
-
-// Etiqueta de día legible (Hoy / Ayer / fecha)
+// Etiqueta de día legible (Hoy / Ayer / fecha)----------------------------------------------------------------
 function dayLabel(dateStr) {
   if (!dateStr || dateStr === 'Sin fecha') return 'Sin fecha';
   const diff = Math.floor((new Date() - new Date(dateStr + 'T00:00:00')) / 86400000);
@@ -317,24 +296,21 @@ function dayLabel(dateStr) {
   if (diff === 1) return 'Ayer';
   return new Date(dateStr + 'T00:00:00').toLocaleDateString('es-MX', {day:'numeric',month:'short',year:'numeric'});
 }
-
-// Filtros del sidebar y selects
+// Filtros del sidebar y selects----------------------------------------------------------------------------------------------
 function setFilter(action) {
   hFilters.action = action;
   document.getElementById('filterAction').value = action;
-  // Marcar activo en el sidebar
+  // Marcar activo en el sidebar------------------------------------------------------------------------------------------
   ['sbAll','sbDeleted','sbCompleted'].forEach(id => document.getElementById(id)?.classList.remove('active'));
   const map = { all:'sbAll', deleted:'sbDeleted', completed:'sbCompleted' };
   if (map[action]) document.getElementById(map[action])?.classList.add('active');
   loadHistory();
 }
-
 let searchTimer;
 function onSearch(val) {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(() => { hFilters.search = val; loadHistory(); }, 280);
 }
-
 function clearFilters() {
   hFilters = { action: 'all', search: '', category: '' };
   document.getElementById('searchInput').value    = '';
@@ -342,8 +318,8 @@ function clearFilters() {
   document.getElementById('filterCategory').value = '';
   loadHistory();
 }
-
-// Limpiar todo el historial
+// Limpiar todo el historial -------------------------------------------------------------------------------------------
+// nota: isaac termina esto ----------------------------------------------------------------------------------------------
 function confirmClear() { new bootstrap.Modal(document.getElementById('clearModal')).show(); }
 async function clearHistory() {
   try {
@@ -355,40 +331,9 @@ async function clearHistory() {
   } catch(e) { Toast.show('Error de conexión','danger'); }
 }
 
-// Restaurar una tarea eliminada desde el historial
-async function restoreTask(historyId, title, btn) {
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-  try {
-    const res = await fetch(API.base + 'history.php', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ history_id: historyId })
-    });
-    const data = await res.json();
-    if (data.success) {
-      Toast.show(`✅ Tarea "<strong>${escHtml(title)}</strong>" restaurada como pendiente`, 'success', 4000);
-      // Animar y quitar el elemento del historial
-      const item = btn.closest('.history-item');
-      if (item) {
-        item.style.transition = 'opacity .35s, transform .35s';
-        item.style.opacity = '0';
-        item.style.transform = 'translateX(30px)';
-        setTimeout(() => { item.remove(); loadHistory(); }, 380);
-      }
-    } else {
-      Toast.show(data.message || 'Error al restaurar', 'danger');
-      btn.disabled = false;
-      btn.innerHTML = '<i class="bi bi-arrow-counterclockwise me-1"></i>Recuperar';
-    }
-  } catch(e) {
-    Toast.show('Error de conexión', 'danger');
-    btn.disabled = false;
-    btn.innerHTML = '<i class="bi bi-arrow-counterclockwise me-1"></i>Recuperar';
-  }
-}
-
-// Busqueda rapida del navbar — usa la función global de app.js
+// Busqueda rapida ---------------------------------------------------------------------------------
+// nota: esto se usa para la parte de actualizar y busca el historial de las tareas elminadas y completadas 
+//  muy importante ---------------------------------------------------------------------------------------
 let qsTimer;
 async function quickSearchFn(val) {
   const drop = document.getElementById('quickSearchResults');
@@ -421,7 +366,6 @@ document.addEventListener('click', e => {
   if (!e.target.closest('#quickSearch') && !e.target.closest('#quickSearchResults'))
     document.getElementById('quickSearchResults').style.display='none';
 });
-
 document.addEventListener('DOMContentLoaded', () => {
   loadHistory();
   document.getElementById('sbAll').classList.add('active');
