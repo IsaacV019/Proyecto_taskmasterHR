@@ -1,6 +1,7 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 
+// Conexión a la base de datos SQLite
 function getDB() {
     $pdo = new PDO('sqlite:' . __DIR__ . '/../db/taskmaster.db');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -11,6 +12,7 @@ function getDB() {
 try {
     $db = getDB();
 
+    // Conteos generales por estado y prioridad
     $stats = $db->query("
         SELECT
             COUNT(*) as total,
@@ -23,16 +25,32 @@ try {
         FROM tasks
     ")->fetch();
 
-   
-    $byCat = $db->query("SELECT category, COUNT(*) as cnt FROM tasks GROUP BY category ORDER BY cnt DESC")->fetchAll();
+    // Conteo de tareas agrupadas por categoría
+    $byCat = $db->query("
+        SELECT category, COUNT(*) as cnt
+        FROM tasks
+        GROUP BY category
+        ORDER BY cnt DESC
+    ")->fetchAll();
 
-  
-    $today = date('Y-m-d');
-    $overdue = $db->query("SELECT COUNT(*) as n FROM tasks WHERE due_date != '' AND due_date < '$today' AND status != 'completada'")->fetch()['n'];
+    // Tareas vencidas: usa DATE('now') de SQLite para evitar diferencias de zona horaria con PHP
+    $overdue = $db->query("
+        SELECT COUNT(*) as n
+        FROM tasks
+        WHERE due_date != ''
+          AND due_date < DATE('now')
+          AND status != 'completada'
+    ")->fetch()['n'];
 
-   
-    $recent = $db->query("SELECT id,title,priority,status,due_date FROM tasks ORDER BY created_at DESC LIMIT 5")->fetchAll();
+    // Últimas 5 tareas creadas para mostrar en el dashboard
+    $recent = $db->query("
+        SELECT id, title, priority, status, due_date
+        FROM tasks
+        ORDER BY created_at DESC
+        LIMIT 5
+    ")->fetchAll();
 
+    // Respuesta JSON con todas las estadísticas
     echo json_encode([
         'success' => true,
         'data' => [
@@ -50,7 +68,8 @@ try {
             'recent'      => $recent,
         ]
     ]);
+
 } catch(Exception $e) {
-    echo json_encode(['success'=>false,'message'=>$e->getMessage(),'data'=>null]);
+    echo json_encode(['success' => false, 'message' => $e->getMessage(), 'data' => null]);
 }
 ?>
