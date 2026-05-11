@@ -1,105 +1,125 @@
 # TaskMaster
 
-## Autor
+Aplicación web de gestión de tareas con CRUD completo, historial de actividad, búsqueda en tiempo real y dashboard con estadísticas.
 
-Proyecto desarrollado como entrega final de **Programación Web
-NRC 111212 | Clave I5642 | CEDL-0209 | M-J 0900:1055**.
+---
 
-- **Profesor:** Carlos Alberto Ridan Jardines
-- **Equipo:**
-  - Jaime Isaac Velásquez Castañeda
-  - Alex Javier Hernández Rosales
+## Información académica
 
-## Descripción del Proyecto
+| Campo       | Detalle                                              |
+|-------------|------------------------------------------------------|
+| Materia     | Programación Web                                     |
+| NRC         | 111212 — Clave I5642 — CEDL-0209 — M-J 09:00–10:55  |
+| Profesor    | Carlos Alberto Ridan Jardines                        |
+| Integrantes | Jaime Isaac Velásquez Castañeda · Alex Javier Hernández Rosales |
 
-**TaskMaster** es una aplicación web completa de gestión de tareas (to-do list avanzado) que permite crear, leer, actualizar y eliminar tareas con múltiples atributos como prioridad, estado, categoría y fecha límite. Incluye historial de actividad con recuperación de tareas eliminadas y búsqueda global en tiempo real.
+---
 
-## Estructura de carpetas
+## Descripción
 
+TaskMaster es un gestor de tareas avanzado que permite organizar actividades con atributos como prioridad, estado, categoría y fecha límite. Incluye historial con recuperación de tareas eliminadas, búsqueda global y un dashboard visual con gráficas.
+
+---
+
+## Tecnologías
+
+| Tecnología      | Uso                                              |
+|-----------------|--------------------------------------------------|
+| PHP             | API REST y lógica del backend                    |
+| SQLite (PDO)    | Base de datos local (archivo)                    |
+| JavaScript      | AJAX, validación y manipulación del DOM          |
+| Bootstrap 5     | Layout responsive y componentes de UI            |
+| Bootstrap Icons | Iconografía                                      |
+| Chart.js        | Gráfica de dona en el dashboard                  |
+| HTML5 / CSS3    | Estructura semántica y estilos personalizados    |
+| Google Fonts    | Tipografía Inter                                 |
+
+---
+
+## Estructura del proyecto
+
+```
 taskmaster/
-├── index.php → Dashboard (página de inicio)
+├── index.php              → Dashboard (página de inicio)
 ├── pages/
-│ ├── list.php → Listado de tareas (con filtros)
-│ ├── form.php → Crear / Editar tarea
-│ ├── detail.php → Detalle de tarea
-│ └── history.php → Historial de tareas eliminadas y completadas
+│   ├── list.php           → Listado de tareas con filtros
+│   ├── form.php           → Crear y editar tareas
+│   ├── detail.php         → Detalle de una tarea
+│   └── history.php        → Historial de eliminadas y completadas
 ├── api/
-│ ├── tasks.php → API CRUD completa (GET/POST/PUT/DELETE)
-│ ├── history.php → API de historial (GET/POST/PUT/DELETE)
-│ ├── stats.php → Estadísticas para el dashboard
-│ └── categories.php → Lista de categorías
+│   ├── tasks.php          → CRUD de tareas (GET / POST / PUT / DELETE)
+│   ├── history.php        → API de historial
+│   ├── stats.php          → Estadísticas para el dashboard
+│   └── categories.php     → Catálogo de categorías
 ├── db/
-│ └── taskmaster.db → Base de datos SQLite
+│   └── taskmaster.db      → Base de datos SQLite (generada automáticamente)
 ├── css/
-│ └── style.css → Estilos personalizados
+│   └── style.css          → Estilos personalizados
 ├── js/
-│ └── app.js → JavaScript principal (compartido por todas las páginas)
+│   └── app.js             → JavaScript compartido por todas las páginas
 └── README.md
+```
 
-## Instrucciones de ejecución
+---
+
+## Instalación y ejecución
 
 ### Requisitos
 
-- XAMPP (Apache + PHP 7.4+) o cualquier servidor PHP
-- Extensión **SQLite** habilitada (incluida en XAMPP por defecto)
-- Navegador moderno (Chrome, Firefox, Edge, Safari)
+- XAMPP con Apache y PHP 7.4 o superior
+- Extensión SQLite habilitada (activa por defecto en XAMPP)
+- Navegador moderno (Chrome, Firefox, Edge o Safari)
 
-### Para ejecutar
+### Pasos
 
-1. Copiar la carpeta `taskmaster/` dentro de `htdocs/`:
+1. Copia la carpeta `taskmaster/` dentro de `htdocs`:
+   ```
    C:\xampp\htdocs\Projects\taskmaster\
-2. Iniciar Apache desde el panel de XAMPP
-3. Abrir en el navegador:
+   ```
+2. Inicia Apache desde el panel de XAMPP.
+3. Abre el navegador en:
+   ```
    http://localhost/Projects/taskmaster/
-4. La base de datos SQLite **se crea automáticamente** si no existe (`db/taskmaster.db`).
+   ```
+4. La base de datos se crea automáticamente al primer uso.
 
-## Tecnologías utilizadas
+---
 
-| Tecnología      | Uso                                        |
-| --------------- | ------------------------------------------ |
-| HTML5           | Estructura semántica de todas las páginas  |
-| CSS3            | Estilos custom, variables CSS, animaciones |
-| Bootstrap 5     | Layout responsive, componentes, utilidades |
-| Bootstrap Icons | Iconografía                                |
-| JavaScript      | Validación, DOM, AJAX, interactividad      |
-| Chart.js        | Gráfica de dona en el dashboard            |
-| PHP             | API REST, backend, conexión BD             |
-| SQLite (PDO)    | Base de datos persistente (archivo local)  |
-| Google Fonts    | Tipografía Inter                           |
+## API REST
 
-## Funcionalidades CRUD — Tareas
+### Tareas — `api/tasks.php`
 
-| Operación       | Ruta                 | Método HTTP |
-| --------------- | -------------------- | ----------- |
-| **Crear** tarea | `api/tasks.php`      | `POST`      |
-| **Leer** todas  | `api/tasks.php`      | `GET`       |
-| **Leer** una    | `api/tasks.php?id=N` | `GET`       |
-| **Actualizar**  | `api/tasks.php?id=N` | `PUT`       |
-| **Eliminar**    | `api/tasks.php?id=N` | `DELETE`    |
+| Método   | Ruta                  | Acción            |
+|----------|-----------------------|-------------------|
+| `GET`    | `api/tasks.php`       | Listar todas      |
+| `GET`    | `api/tasks.php?id=N`  | Obtener una       |
+| `POST`   | `api/tasks.php`       | Crear             |
+| `PUT`    | `api/tasks.php?id=N`  | Actualizar        |
+| `DELETE` | `api/tasks.php?id=N`  | Eliminar          |
 
-## Funcionalidades CRUD — Historial
+### Historial — `api/history.php`
 
-| Operación             | Ruta              | Método HTTP |
-| --------------------- | ----------------- | ----------- |
-| **Leer** historial    | `api/history.php` | `GET`       |
-| **Registrar** evento  | `api/history.php` | `POST`      |
-| **Restaurar** tarea   | `api/history.php` | `PUT`       |
-| **Limpiar** historial | `api/history.php` | `DELETE`    |
+| Método   | Ruta              | Acción                  |
+|----------|-------------------|-------------------------|
+| `GET`    | `api/history.php` | Ver historial            |
+| `POST`   | `api/history.php` | Registrar evento         |
+| `PUT`    | `api/history.php` | Restaurar tarea eliminada|
+| `DELETE` | `api/history.php` | Limpiar historial        |
 
-## Características destacadas
+---
 
-- CRUD completo mediante API REST sin recargar la página
+## Funcionalidades
+
+- CRUD completo sin recargar la página (AJAX)
 - Historial automático de tareas eliminadas y completadas
-- **Recuperación de tareas eliminadas** desde el historial con un botón por registro
-- **Búsqueda global en tiempo real** en el navbar (funciona en todas las páginas)
-- Filtros en tiempo real por búsqueda, prioridad, estado y categoría
-- Validación de formularios en tiempo real con retroalimentación visual
-- Confirmación modal antes de eliminar registros
-- Notificaciones tipo toast para cada operación
-- Dashboard con estadísticas, barra de progreso y gráfica de dona (Chart.js)
-- Sidebar con filtros rápidos y contadores de estado
-- Indicadores visuales de tareas vencidas o próximas a vencer
-- Cambio rápido de estado desde la vista de detalle
+- Recuperación de tareas eliminadas desde el historial
+- Búsqueda global en tiempo real desde el navbar
+- Filtros por estado, prioridad y categoría
+- Validación de formularios con retroalimentación visual
+- Modal de confirmación antes de eliminar
+- Notificaciones toast por cada operación
+- Dashboard con estadísticas, barra de progreso y gráfica de dona
+- Sidebar con contadores de estado actualizados en tiempo real
+- Indicadores de tareas vencidas o próximas a vencer
 - Actualización automática de la lista cada 45 segundos
-- Diseño en modo oscuro consistente
-- Interfaz totalmente responsive (móvil, tablet, escritorio)
+- Diseño oscuro responsive (móvil, tablet y escritorio)

@@ -1,15 +1,9 @@
-
-<!-- -Actualización automática de la lista cada 45 segundos para que esto no me lo muebas isaac
- es que dejalo asi ya depues lo termino 
- 
- nota: "alertas, cambios visuales" los toasts y el modal de confirmación cubren eso perfectamente, tenlo presente para explicarlo.
-  "actualización automática tras CRUD" también se cumple para lista se recarga sola después de cada operación y además tiene un auto-refresh cada 45 segundos.-->
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TaskMaster — Dashboard</title>
-  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/bootstrap.min.css" rel="stylesheet"> 
   <link href="font/bootstrap-icons.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   <link href="css/fuentes.css" rel="stylesheet">

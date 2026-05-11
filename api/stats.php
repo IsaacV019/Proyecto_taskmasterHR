@@ -2,7 +2,11 @@
 // Indica que la respuesta será en formato JSON y con codificación UTF-8
 header('Content-Type: application/json; charset=utf-8');
 
+<<<<<<< Alex-Javier
 // Función para conectar a la base de datos SQLite
+=======
+// Conexión a la base de datos SQLite
+>>>>>>> main
 function getDB() {
     // Crea la conexión a la base de datos
     $pdo = new PDO('sqlite:' . __DIR__ . '/../db/taskmaster.db');
@@ -20,7 +24,11 @@ try {
     // Obtiene la conexión a la base de datos
     $db = getDB();
 
+<<<<<<< Alex-Javier
     // Consulta para obtener estadísticas generales de las tareas
+=======
+    // Conteos generales por estado y prioridad
+>>>>>>> main
     $stats = $db->query("
         SELECT
             COUNT(*) as total, -- Total de tareas
@@ -33,6 +41,7 @@ try {
         FROM tasks
     ")->fetch(); // Obtiene un solo resultado
 
+<<<<<<< Alex-Javier
     // Consulta para contar tareas por categoría
     $byCat = $db->query("
         SELECT category, COUNT(*) as cnt 
@@ -62,6 +71,34 @@ try {
     ")->fetchAll();
 
     // Devuelve la respuesta en formato JSON con todos los datos
+=======
+    // Conteo de tareas agrupadas por categoría
+    $byCat = $db->query("
+        SELECT category, COUNT(*) as cnt
+        FROM tasks
+        GROUP BY category
+        ORDER BY cnt DESC
+    ")->fetchAll();
+
+    // Tareas vencidas: usa DATE('now') de SQLite para evitar diferencias de zona horaria con PHP
+    $overdue = $db->query("
+        SELECT COUNT(*) as n
+        FROM tasks
+        WHERE due_date != ''
+          AND due_date < DATE('now')
+          AND status != 'completada'
+    ")->fetch()['n'];
+
+    // Últimas 5 tareas creadas para mostrar en el dashboard
+    $recent = $db->query("
+        SELECT id, title, priority, status, due_date
+        FROM tasks
+        ORDER BY created_at DESC
+        LIMIT 5
+    ")->fetchAll();
+
+    // Respuesta JSON con todas las estadísticas
+>>>>>>> main
     echo json_encode([
         'success' => true,
         'data' => [
@@ -81,11 +118,15 @@ try {
     ]);
 
 } catch(Exception $e) {
+<<<<<<< Alex-Javier
     // En caso de error, devuelve un JSON con el mensaje
     echo json_encode([
         'success'=>false,
         'message'=>$e->getMessage(),
         'data'=>null
     ]);
+=======
+    echo json_encode(['success' => false, 'message' => $e->getMessage(), 'data' => null]);
+>>>>>>> main
 }
 ?>

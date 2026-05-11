@@ -1,5 +1,9 @@
 <?php
+<<<<<<< Alex-Javier
 //SQLite ay que meterle lo de edtitar y borrar de una , el sabado me dices por que se me olvidad xd.------------------
+=======
+
+>>>>>>> main
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
@@ -110,11 +114,12 @@ switch ($method) {
             $data['due_date'] ?? '',
         ]);
         $newId = $db->lastInsertId();
-        $task  = $db->query("SELECT * FROM tasks WHERE id = $newId")->fetch();
+        $stmt  = $db->prepare('SELECT * FROM tasks WHERE id = ?');
+        $stmt->execute([$newId]);
+        $task  = $stmt->fetch();
         jsonSuccess($task, 'Tarea creada correctamente', 201);
         break;
 
-    // termina esta parte isaac----------------------------------------------------------------
     case 'PUT':
         if (!$id) jsonError('ID requerido para actualizar');
         $data = getInput();
@@ -122,10 +127,17 @@ switch ($method) {
         $exists = $db->prepare('SELECT id FROM tasks WHERE id = ?');
         $exists->execute([$id]);
         if (!$exists->fetch()) jsonError('Tarea no encontrada', 404);
+<<<<<<< Alex-Javier
         $errors = validateTask(array_merge(
             $db->query("SELECT * FROM tasks WHERE id=$id")->fetch(),
             $data
         ));
+=======
+
+        $current = $db->prepare('SELECT * FROM tasks WHERE id = ?');
+        $current->execute([$id]);
+        $errors = validateTask(array_merge($current->fetch(), $data));
+>>>>>>> main
         if ($errors) jsonError(implode(' ', $errors));
         $allowed = ['title','description','priority','status','category','due_date'];
         $sets = []; $params = [];
@@ -143,7 +155,13 @@ switch ($method) {
         $sql = 'UPDATE tasks SET ' . implode(', ', $sets) . ' WHERE id = ?';
         $db->prepare($sql)->execute($params);
 
+<<<<<<< Alex-Javier
         $task = $db->query("SELECT * FROM tasks WHERE id=$id")->fetch();
+=======
+        $stmt2 = $db->prepare('SELECT * FROM tasks WHERE id = ?'); $stmt2->execute([$id]); $task = $stmt2->fetch();
+
+        // Si cambio el estado a completada, guardarlo en el historial
+>>>>>>> main
         if (isset($data['status']) && $data['status'] === 'completada') {
             $db->exec("CREATE TABLE IF NOT EXISTS history (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -163,7 +181,11 @@ switch ($method) {
         }
         jsonSuccess($task, 'Tarea actualizada correctamente');
         break;
+<<<<<<< Alex-Javier
     // ── DELETE  ya lo eche jalar para que ni le muevas pendejo jajajaja---------------------------------------------------
+=======
+
+>>>>>>> main
     case 'DELETE':
         if (!$id) jsonError('ID requerido para eliminar');
         // Traer todos los datos ANTES de borrar para guardarlos en el historial---------------------------------------------------
@@ -174,7 +196,11 @@ switch ($method) {
         // Borrar la tarea de la tabla principal--------------------------------------------------------------------------------
         $db->prepare('DELETE FROM tasks WHERE id = ?')->execute([$id]);
         // Registrar en historial automaticamente al eliminar
+<<<<<<< Alex-Javier
         // Asi el usuario puede ver que tareas borro y cuando -----------------------------------------------------------------
+=======
+        // Asi el usuario puede ver que tareas borro y cuando
+>>>>>>> main
         $db->exec("CREATE TABLE IF NOT EXISTS history (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             task_id INTEGER, task_title TEXT NOT NULL,

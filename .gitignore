@@ -1,0 +1,15 @@
+# Base de datos SQLite (se genera automáticamente al correr el proyecto)
+*.db
+
+# Archivos de log
+*.log
+
+# Variables de entorno
+.env
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Dependencias
+vendor/
